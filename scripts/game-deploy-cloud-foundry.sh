@@ -54,11 +54,11 @@ function ibmcloud_login() {
   # Obtain the API endpoint from BLUEMIX_REGION and set it as default
   _out Logging in to IBM cloud
   ibmcloud api --unset
-  IBMCLOUD_API_ENDPOINT=$(ibmcloud api | awk '/'$BLUEMIX_REGION'/{ print $2 }')
-  ibmcloud api $IBMCLOUD_API_ENDPOINT
+  #IBMCLOUD_API_ENDPOINT=$(ibmcloud api | awk '/'$BLUEMIX_REGION'/{ print $2 }')
+  ibmcloud api https://cloud.ibm.com
 
   # Login to ibmcloud, generate .wskprops
-  ibmcloud login --apikey $IBMCLOUD_API_KEY -a $IBMCLOUD_API_ENDPOINT
+  ibmcloud login --apikey $IBMCLOUD_API_KEY -r $BLUEMIX_REGION
   ibmcloud target -o "$IBMCLOUD_ORG" -s "$IBMCLOUD_SPACE"
   ibmcloud fn api list > /dev/null
 
@@ -69,7 +69,6 @@ function ibmcloud_login() {
 function setup() {
     _out Creating vue.config.js
   cd ${root_folder}/
-  npm install
   cp ${root_folder}/../game/vue.config.js.cf.template ${root_folder}/../game/vue.config.js
 
   _out Building Vue application

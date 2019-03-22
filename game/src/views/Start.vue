@@ -1,6 +1,7 @@
 <template>
   <div class="about">
-    <h4 style="margin-bottom:25px">Enter your Data if you want to win a Prize</h4>
+    <h4 v-if="this.$store.state.demoMode == false" style="margin-bottom:25px">Enter your Data if you want to win a Prize</h4>
+    <h4 v-if="this.$store.state.demoMode == true" style="margin-bottom:25px">Enter your Data to save Scores in the HighScore List</h4>
     <div>
       <b-form @submit="onSubmit">
         <b-form-group id="exampleInputGroup1" label="EMail:" label-for="exampleInput1">
@@ -37,12 +38,12 @@
             v-model="form.checked"
             value="accepted"
             unchecked-value="not_accepted"
-          >I accept the terms</b-form-checkbox>
+          >I accept the terms <div style="margin-top:10px;margin-bottom:10px;font-size: smaller;color: darkgray;"><a target="_blank" style="color:#053c9f" href="https://www.ibm.com/privacy/us/en/">IBM Privacy Statement</a> and <a target="_blank" style="color:#053c9f" href="https://www.ibm.com/legal/us/en/">Terms of Use</a></div></b-form-checkbox>
         </b-form-group>
         <p v-if="errors.length > 0">
           <b style="color: #ffc107 !important">Please accept the terms.</b>
         </p>
-
+        <div v-if="this.$store.state.demoMode == true" style="margin-bottom:10px">Note: In this demo version, registration with real user information is not supported. A user 'Demo Player' is used instead.</div>
         <b-button type="submit" variant="primary" style="margin-right:10px;background-color: #053c9f !important;border-color:#053c9f !important;">Let's go</b-button>
       </b-form>
       <div></div>
@@ -122,18 +123,26 @@ export default {
 
         if (this.$store.state.apis.users.url != "users-url-not-defined") {
           const axiosService = axios.create({
-            timeout: 5000,
+            timeout: 10000,
             headers: {
               "Content-Type": "application/json"
             }
           });
 
           let that = this;
+          let email = "demo@email.com";
+          let firstName = "Demo";
+          let lastName = "Player";
+          if (this.$store.state.demoMode == false) {
+            firstName = this.form.firstname;
+            lastName = this.form.lastname;
+            email = this.form.email;
+          }
           axiosService
             .post(this.$store.state.apis.users.url, {
-              firstName: this.form.firstname,
-              lastName: this.form.lastname,
-              email: this.form.email,
+              firstName: firstName,
+              lastName: lastName,
+              email: email,
               signedTerms: "true",
               registrationDate: new Date().getTime()
             })
